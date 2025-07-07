@@ -109,3 +109,34 @@ def shift_up(col: Array) -> Array:
     )
 
     return col
+
+# Handle the merging of two equal adjacent elements. 
+# This function will double the value of the first element and set the second element to zero while updating the reward.
+def merge_elements(carry: Tuple[jnp.ndarray, float, int]) -> Tuple[jnp.ndarray, float]:
+    col, reward, i = carry  # Unpack the input tuple into the column, current reward, and index
+    new_col_i = 2 * col[i]  # Double the value of the element at index i
+    col = col.at[i].set(new_col_i)  # Set the doubled value at index i
+    col = col.at[i + 1].set(0)  # Set the value at index i + 1 to zero
+    reward += new_col_i  # Add the value of the merged element to the reward
+    return col, reward
+
+# This function will scan through the column and merge adjacent equal elements.
+def merge_equal_elements(carry: Tuple[jnp.ndarray, float], i: int) -> Tuple[Tuple[jnp.ndarray, float], None]:
+    col, reward = carry
+    col, reward = jax.lax.cond(
+        (col[i] != 0) & (col[i] == col[i + 1]),  # Condition: elements at index i and i+1 are equal and not zero
+        merge_elements,  # Function to call if the condition is true
+        lambda col_reward_i: col_reward_i[:2],  # Function to call if the condition is false (pass through)
+        (col, reward, i),
+    )
+    return (col, reward), None
+
+# This function will scan through the column and merge adjacent equal elements.
+@jax.jit
+def merge_col(col: jnp.ndarray) -> Tuple[jnp.ndarray, float]:
+    reward = 0.0
+    elements_indices = jnp.arange(len(col) - 1)
+    (col, reward), _ = jax.lax.scan(
+        f=merge_equal_elements, init=(col, reward), xs=elements_indices
+    )
+    return col, reward

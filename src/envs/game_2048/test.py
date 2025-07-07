@@ -1,6 +1,6 @@
 import jax
 import jax.numpy as jnp
-from .utils import add_random_cell, generate_board, shift_up
+from .utils import add_random_cell, generate_board, merge_col, shift_up
 
 def test_add_random_cell(add_random_cell_fn):
     try:
@@ -51,8 +51,20 @@ def test_shift_up(shift_up_fn):
     print(updated_col)
 
 
+def test_merge_col(merge_col_fn):
+    board_col = jnp.array([0, 2, 0, 2])
+    print("Initial column: ",board_col)
+
+    shift_up_jit = jax.jit(shift_up)
+    updated_col = shift_up_jit(board_col)
+    print("After shifting the elements: ",updated_col)
+
+    updated_col = merge_col(updated_col)
+    print("After merging equal elements: ",updated_col[0], "with a reward equals: ",updated_col[1])
+
+
 if __name__ == "__main__":
     test_add_random_cell(add_random_cell)
     test_generate_board(generate_board)
     test_shift_up(shift_up)
-    
+    test_merge_col(merge_col)
