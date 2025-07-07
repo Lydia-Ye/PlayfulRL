@@ -4,21 +4,46 @@ from .env import Game2048
 
 
 def main():
-    # Create a random key
-    key = jax.random.PRNGKey(0)
-    # Create the environment
-    env = Game2048()
-    # Reset the environment
-    state, timestep = env.reset(key)
-    print("Initial State:", state)
-    print("Initial TimeStep:", timestep)
+    # Initialize the environment
+    game2048 = Game2048(board_size=4)
 
-    # Take a random action (0=up, 1=right, 2=down, 3=left)
-    action = int(jax.random.randint(key, (), 0, 4))
-    print("Taking action:", action)
-    next_state, next_timestep = env.step(state, action)
-    print("Next State:", next_state)
-    print("Next TimeStep:", next_timestep)
+    # Generate a random key for the environment
+    key = jax.random.PRNGKey(0)
+
+    # Reset the environment to get the initial state and timestep
+    state, timestep = game2048.reset(key)
+
+    # Print the initial state and timestep
+    print("Initial State:", state)
+    print("Initial Timestep:", timestep)
+
+    # Initialize a list to store the states for later visualization
+    states = [state]
+
+    # Variable to accumulate the total reward
+    total_reward = jnp.float32(0)
+
+    # Interaction loop until the game ends
+    while not timestep.last():
+        # Split the key for randomness in action selection
+        action_key, key = jax.random.split(key)
+
+        # Randomly select an action based on the action mask
+        action = jax.random.choice(action_key, jnp.arange(4), p=state.action_mask.flatten())
+
+        # Take the action and update the state and timestep
+        state, timestep = game2048.step(state, action)
+
+        # Accumulate the reward
+        total_reward += timestep.reward
+
+        # Store the state for visualization
+        states.append(state)
+
+    # Print the total reward after the game ends
+    print("Total Reward:", total_reward)
+
+    game2048.animate(states=states, interval=400)
 
 if __name__ == "__main__":
     main() 
