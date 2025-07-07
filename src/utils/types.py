@@ -1,12 +1,10 @@
 from dataclasses import dataclass, field
 from typing import Generic, Dict, TypeVar
 import jax.numpy as jnp
+from jumanji.types import StepType
 
 Array = jnp.ndarray
 Observation = TypeVar('Observation')
-
-# Placeholder for StepType, this should be defined according to the RL framework
-StepType = int  # or use an Enum for better clarity
 
 @dataclass
 class TimeStep(Generic[Observation]):
