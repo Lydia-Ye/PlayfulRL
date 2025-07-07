@@ -1,0 +1,23 @@
+# Core JAX dependencies
+jax>=0.4.0
+jaxlib>=0.4.0
+
+# Jumanji RL environment framework
+jumanji>=0.3.0
+
+# Scientific computing and data manipulation
+numpy>=1.21.0
+
+# Visualization libraries
+matplotlib>=3.5.0
+pillow>=8.0.0
+
+# Game development and interactive demos
+pygame>=2.0.0
+
+# Jupyter/IPython support for notebooks
+ipython>=7.0.0
+jupyter>=1.0.0
+
+# Optional: For animation support (requires ImageMagick)
+# imagemagick>=0.0.0  # Uncomment if you want to save animated GIFs
