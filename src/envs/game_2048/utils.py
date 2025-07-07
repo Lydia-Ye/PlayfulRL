@@ -140,3 +140,51 @@ def merge_col(col: jnp.ndarray) -> Tuple[jnp.ndarray, float]:
         f=merge_equal_elements, init=(col, reward), xs=elements_indices
     )
     return col, reward
+
+
+# This function will move the column up.
+def move_up_col(carry: Tuple[jnp.ndarray, float], c: int) -> Tuple[Tuple[jnp.ndarray, float], None]:
+    board, additional_reward = carry
+    col = board[:, c]
+    col = shift_up(col)  # In example: [4, 4, 2, 2] -> [4, 4, 2, 2]
+    col, reward = merge_col(col)  # In example: [4, 4, 2, 2] -> [8, 0, 4, 0]
+    col = shift_up(col)  # In example: [8, 0, 4, 0] -> [8, 4, 0, 0]
+    additional_reward += reward
+    return (board.at[:, c].set(col), additional_reward), None
+
+# This function will move the board up.
+@jax.jit
+def move_up(board: Board) -> Tuple[Board, float]:
+    """Move up."""
+    additional_reward = 0.0 # Initialize the reward to zero
+    col_indices = jnp.arange(board.shape[0])  # Board of size 4 -> [0, 1, 2, 3]
+    (board, additional_reward), _ = jax.lax.scan(
+        f=move_up_col,
+        init=(board, additional_reward),
+        xs=col_indices,
+    )
+    return board, additional_reward
+
+# This function will move the board down.
+def move_down(board: jnp.ndarray) -> Tuple[jnp.ndarray, float]:
+    """Move down."""
+    board, additional_reward = move_up(
+        board=jnp.flip(board, 0)
+    )
+    return jnp.flip(board, 0), additional_reward
+
+# This function will move the board left.
+def move_left(board: jnp.ndarray) -> Tuple[jnp.ndarray, float]:
+    """Move left."""
+    board, additional_reward = move_up(
+        board=jnp.rot90(board, k=-1)
+    )
+    return jnp.rot90(board, k=1), additional_reward
+
+# This function will move the board right.
+def move_right(board: jnp.ndarray) -> Tuple[jnp.ndarray, float]:
+    """Move right."""
+    board, additional_reward = move_up(
+        board=jnp.rot90(board, k=1)
+    )
+    return jnp.rot90(board, k=-1), additional_reward
