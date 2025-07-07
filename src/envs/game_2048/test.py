@@ -1,6 +1,6 @@
 import jax
 import jax.numpy as jnp
-from .utils import add_random_cell
+from .utils import add_random_cell, generate_board
 
 def test_add_random_cell(add_random_cell_fn):
     try:
@@ -37,5 +37,13 @@ def test_add_random_cell(add_random_cell_fn):
     except Exception as e:
         print(f"An error occurred: {e}")
 
+def test_generate_board(generate_board_fn):
+    # Test generate_board
+    board_size = 4
+    key = jax.random.PRNGKey(0)
+    initial_board = generate_board(board_size, key)
+    print(initial_board)
+
 if __name__ == "__main__":
     test_add_random_cell(add_random_cell)
+    test_generate_board(generate_board)

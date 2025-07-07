@@ -31,4 +31,18 @@ def add_random_cell(board: Board, key: PRNGKey) -> Board:
 
     return board
 
-    # from .utils import add_random_cell
+
+'''
+How to generate a new board?
+    1. We start by creating an empty board of the specified size.
+    2. We then call add_random_cell to place a random cell with a value of 2 or 4.
+    3. Finally, we return the newly generated board.
+'''
+def generate_board(board_size: int, key: PRNGKey) -> Board:
+    # Create empty board
+    board = jnp.zeros((board_size, board_size), dtype=jnp.int32)
+
+    # Fill one random cell with a value of 2 or 4
+    board = add_random_cell(board, key)
+
+    return board
