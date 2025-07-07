@@ -1,9 +1,9 @@
 from typing import NamedTuple, TypeAlias
 import jax.numpy as jnp
 
-Array = jnp.ndarray
-Numeric = float  # or use jnp.float32 if you want to be more specific
-PRNGKey = Array  # or use jax.random.PRNGKeyArray if available
+Array: TypeAlias = jnp.ndarray
+Numeric: TypeAlias = float  # or use jnp.float32 if you want to be more specific
+PRNGKey: TypeAlias = Array  # or use jax.random.PRNGKeyArray if available
 
 Board: TypeAlias = Array
 
